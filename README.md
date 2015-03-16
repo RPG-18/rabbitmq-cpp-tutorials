@@ -10,7 +10,7 @@
 On Debian/Ubuntu:
 
   sudo apt-get install cmake libpoco-dev
-  
+
 ## Build
     
     git clone https://github.com/RPG-18/rabbitmq-cpp-tutorials.git
