@@ -9,7 +9,7 @@
   
 On Debian/Ubuntu:
 
-  sudo apt-get install cmake libpoco-dev
+    sudo apt-get install cmake libpoco-dev
 
 ## Build
     
