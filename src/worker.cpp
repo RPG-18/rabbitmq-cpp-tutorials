@@ -21,14 +21,7 @@ int main(void)
                 const auto body = message.message();
                 std::cout<<" [x] Received "<<body<<std::endl;
 
-                size_t count = 0;
-                std::for_each(body.cbegin(), body.cend(), [&](const char& ch)
-                        {
-                            if(ch =='.')
-                            {
-                                ++count;
-                            }
-                        });
+                size_t count = std::count(body.cbegin(), body.cend(), '.');
                 std::this_thread::sleep_for (std::chrono::seconds(count));
 
                 std::cout<<" [x] Done"<<std::endl;
