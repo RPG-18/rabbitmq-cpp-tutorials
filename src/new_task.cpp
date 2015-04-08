@@ -13,7 +13,7 @@ int main(int argc, const char* argv[])
     AMQP::Connection connection(&handler, AMQP::Login("guest", "guest"), "/");
     AMQP::Channel channel(&connection);
 
-    auto callback =
+    AMQP::QueueCallback callback =
             [&](const std::string &name, int msgcount, int consumercount)
             {
                 channel.publish("", "task_queue", msg);

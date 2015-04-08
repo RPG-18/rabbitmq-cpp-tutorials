@@ -1,8 +1,10 @@
 #ifndef SRC_SIMPLEPOCOHANDLER_H_
 #define SRC_SIMPLEPOCOHANDLER_H_
 
+#include <memory>
 #include <amqpcpp.h>
-#include <Poco/Net/StreamSocket.h>
+
+class SimplePocoHandlerImpl;
 
 class SimplePocoHandler: public AMQP::ConnectionHandler
 {
@@ -34,7 +36,7 @@ private:
 
 private:
 
-    Poco::Net::StreamSocket m_socket;
+    std::shared_ptr<SimplePocoHandlerImpl> m_impl;
     bool m_connected;
     AMQP::Connection* m_connection;
     bool m_needExit;

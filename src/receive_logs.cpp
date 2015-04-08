@@ -17,18 +17,19 @@ int main(void)
         std::cout <<" [x] "<<message.message() << std::endl;
     };
 
-    auto callback =
+    AMQP::QueueCallback callback =
             [&](const std::string &name, int msgcount, int consumercount)
             {
                 channel.bindQueue("logs", name,"");
                 channel.consume(name, AMQP::noack).onReceived(receiveMessageCallback);
             };
 
-    channel.declareExchange("logs", AMQP::fanout).onSuccess([&]()
-    {
-        channel.declareQueue(AMQP::exclusive).onSuccess(callback);
+    AMQP::SuccessCallback success = [&]()
+            {
+                channel.declareQueue(AMQP::exclusive).onSuccess(callback);
+            };
 
-    });
+    channel.declareExchange("logs", AMQP::fanout).onSuccess(success);
 
     std::cout << " [*] Waiting for messages. To exit press CTRL-C\n";
     handler.loop();

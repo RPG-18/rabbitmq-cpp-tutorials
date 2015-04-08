@@ -30,7 +30,7 @@ int main(int argc, const char* argv[])
                           << std::endl;
             };
 
-    auto callback = [&](const std::string &name,
+    AMQP::QueueCallback callback = [&](const std::string &name,
             int msgcount,
             int consumercount)
     {
