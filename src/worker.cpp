@@ -27,7 +27,6 @@ int main(void)
                 std::this_thread::sleep_for (std::chrono::seconds(count));
 
                 std::cout<<" [x] Done"<<std::endl;
-                std::cout<<" delivery "<<deliveryTag<<std::endl;
                 channel.ack(deliveryTag);
             });
 

@@ -1,5 +1,5 @@
 add_library(poco_simple_handler SimplePocoHandler.cpp SimplePocoHandler.h)
-target_link_libraries(poco_simple_handler PocoNet)
+target_link_libraries(poco_simple_handler PocoNet PocoFoundation glog)
 
 set(PROGS send
           receive
