@@ -15,7 +15,7 @@ int main(void)
     channel.setQos(1);
 
     channel.declareQueue("task_queue", AMQP::durable);
-    channel.consume("task_queue", AMQP::noack).onReceived(
+    channel.consume("task_queue").onReceived(
             [&channel](const AMQP::Message &message,
                        uint64_t deliveryTag,
                        bool redelivered)
