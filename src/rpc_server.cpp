@@ -25,6 +25,8 @@ int main(void)
     AMQP::Connection connection(&handler, AMQP::Login("guest", "guest"), "/");
 
     AMQP::Channel channel(&connection);
+    channel.setQos(1);
+
     channel.declareQueue("rpc_queue");
     channel.consume("").onReceived([&channel](const AMQP::Message &message,
             uint64_t deliveryTag,
@@ -40,7 +42,6 @@ int main(void)
         channel.ack(deliveryTag);
     });
 
-    channel.setQos(1);
     std::cout << " [x] Awaiting RPC requests" << std::endl;
     handler.loop();
     return 0;

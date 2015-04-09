@@ -12,6 +12,8 @@ int main(void)
     AMQP::Connection connection(&handler, AMQP::Login("guest", "guest"), "/");
 
     AMQP::Channel channel(&connection);
+    channel.setQos(1);
+
     channel.declareQueue("task_queue", AMQP::durable);
     channel.consume("task_queue", AMQP::noack).onReceived(
             [&channel](const AMQP::Message &message,
@@ -25,10 +27,11 @@ int main(void)
                 std::this_thread::sleep_for (std::chrono::seconds(count));
 
                 std::cout<<" [x] Done"<<std::endl;
+                std::cout<<" delivery "<<deliveryTag<<std::endl;
                 channel.ack(deliveryTag);
             });
 
-    channel.setQos(1);
+
     std::cout << " [*] Waiting for messages. To exit press CTRL-C\n";
     handler.loop();
     return 0;
