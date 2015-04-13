@@ -2,6 +2,7 @@
 #include <thread>
 #include <chrono>
 #include <cstring>
+#include <cassert>
 #include <iostream>
 #include <Poco/Net/StreamSocket.h>
 
@@ -48,11 +49,18 @@ namespace
             return m_data.data();
         }
 
+        void shl(size_t count)
+        {
+            assert(count<m_use);
+            const size_t diff = m_use - count;
+            std::memmove(m_data.data(), m_data.data()+count, diff);
+            m_use -= diff;
+        }
+
     private:
         std::vector<char> m_data;
         size_t m_use;
     };
-
 }
 
 struct SimplePocoHandlerImpl
@@ -119,6 +127,8 @@ void SimplePocoHandler::loop()
                 if (count == m_impl->inputBuffer.available())
                 {
                     m_impl->inputBuffer.drain();
+                } else if(count >0 ){
+                    m_impl->inputBuffer.shl(count);
                 }
             }
             sendDataFromBuffer();
