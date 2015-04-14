@@ -52,9 +52,10 @@ namespace
         void shl(size_t count)
         {
             assert(count<m_use);
+
             const size_t diff = m_use - count;
             std::memmove(m_data.data(), m_data.data()+count, diff);
-            m_use -= diff;
+            m_use = m_use - count;
         }
 
     private:
