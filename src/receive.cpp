@@ -1,9 +1,13 @@
 #include <iostream>
+
 #include "SimplePocoHandler.h"
+#include "AsioHandler.h"
 
 int main(void)
 {
-    SimplePocoHandler handler("localhost", 5672);
+    boost::asio::io_service ioService;
+    AsioHandler handler(ioService);
+    handler.connect("localhost", 5672);
 
     AMQP::Connection connection(&handler, AMQP::Login("guest", "guest"), "/");
 
@@ -19,6 +23,7 @@ int main(void)
             });
 
     std::cout << " [*] Waiting for messages. To exit press CTRL-C\n";
-    handler.loop();
+
+    ioService.run();
     return 0;
 }

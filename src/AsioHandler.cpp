@@ -120,7 +120,6 @@ void AsioHandler::doRead()
     m_socket.async_receive(boost::asio::buffer(m_asioInputBuffer),
             [this](boost::system::error_code ec, std::size_t length)
             {
-                std::cerr<<"read "<<length<<" bytes"<<std::endl;
                 if (!ec)
                 {
                     m_amqpBuffer->write(m_asioInputBuffer.data(), length);
@@ -171,7 +170,6 @@ void AsioHandler::parseData()
 {
     if (m_connection == nullptr)
     {
-        std::cerr<<"!!!!"<<std::endl;
         return;
     }
 
@@ -180,12 +178,10 @@ void AsioHandler::parseData()
 
     if (count == m_amqpBuffer->available())
     {
-        std::cerr<<"drain"<<std::endl;
         m_amqpBuffer->drain();
     }
     else if (count > 0)
     {
-        std::cerr<<"shl"<<std::endl;
         m_amqpBuffer->shl(count);
     }
 }
@@ -213,4 +209,3 @@ void AsioHandler::onClosed(AMQP::Connection *connection)
         m_socket.close();
     }
 }
-
