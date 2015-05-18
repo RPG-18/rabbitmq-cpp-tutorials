@@ -1,13 +1,15 @@
 #include <iostream>
 
 #include "tools.h"
-#include "SimplePocoHandler.h"
+#include "AsioHandler.h"
 
 int main(int argc, const char* argv[])
 {
     const std::string correlation(uuid());
 
-    SimplePocoHandler handler("localhost", 5672);
+    boost::asio::io_service ioService;
+    AsioHandler handler(ioService);
+    handler.connect("localhost", 5672);
 
     AMQP::Connection connection(&handler, AMQP::Login("guest", "guest"), "/");
 
@@ -25,6 +27,7 @@ int main(int argc, const char* argv[])
     };
     channel.declareQueue(AMQP::exclusive).onSuccess(callback);
 
+    boost::asio::deadline_timer t(ioService, boost::posix_time::millisec(100));
     auto receiveCallback = [&](const AMQP::Message &message,
             uint64_t deliveryTag,
             bool redelivered)
@@ -33,11 +36,11 @@ int main(int argc, const char* argv[])
             return;
 
         std::cout<<" [.] Got "<<message.message()<<std::endl;
-        handler.quit();
+        t.async_wait([&](const boost::system::error_code&){ioService.stop();});
     };
 
     channel.consume("", AMQP::noack).onReceived(receiveCallback);
 
-    handler.loop();
+    ioService.run();
     return 0;
 }

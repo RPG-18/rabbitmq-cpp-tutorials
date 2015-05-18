@@ -1,7 +1,8 @@
 #include <iostream>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
-#include "SimplePocoHandler.h"
 #include "tools.h"
+#include "AsioHandler.h"
 
 int main(int argc, const char* argv[])
 {
@@ -9,18 +10,22 @@ int main(int argc, const char* argv[])
             argc > 1 ? join(&argv[2], &argv[argc], " ") : "Hello World!";
     const std::string routing_key = argc > 1 ? argv[1] : "anonymous.info";
 
-    SimplePocoHandler handler("localhost", 5672);
+    boost::asio::io_service ioService;
+    AsioHandler handler(ioService);
+    handler.connect("localhost", 5672);
 
     AMQP::Connection connection(&handler, AMQP::Login("guest", "guest"), "/");
 
+    boost::asio::deadline_timer t(ioService, boost::posix_time::millisec(100));
     AMQP::Channel channel(&connection);
     channel.declareExchange("topic_logs", AMQP::topic).onSuccess([&]()
     {
         channel.publish("topic_logs", routing_key, msg);
         std::cout << " [x] Sent "<<routing_key<<":"<<msg<< std::endl;
-        handler.quit();
+
+        t.async_wait([&](const boost::system::error_code&){ioService.stop();});
     });
 
-    handler.loop();
+    ioService.run();
     return 0;
 }

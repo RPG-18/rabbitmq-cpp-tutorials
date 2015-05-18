@@ -1,10 +1,14 @@
 #include <iostream>
 
-#include "SimplePocoHandler.h"
+#include "AsioHandler.h"
+
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 int main(void)
 {
-    SimplePocoHandler handler("localhost", 5672);
+    boost::asio::io_service ioService;
+    AsioHandler handler(ioService);
+    handler.connect("localhost", 5672);
 
     AMQP::Connection connection(&handler, AMQP::Login("guest", "guest"), "/");
 
@@ -32,6 +36,7 @@ int main(void)
     channel.declareExchange("logs", AMQP::fanout).onSuccess(success);
 
     std::cout << " [*] Waiting for messages. To exit press CTRL-C\n";
-    handler.loop();
+
+    ioService.run();
     return 0;
 }

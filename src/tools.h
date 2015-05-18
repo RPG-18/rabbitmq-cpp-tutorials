@@ -4,8 +4,9 @@
 #include <string>
 #include <sstream>
 
-#include "kashmir/uuid.h"
-#include "kashmir/devrand.h"
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/uuid_generators.hpp>
 
 
 template<typename Iterator>
@@ -27,14 +28,11 @@ std::string join(Iterator first, const Iterator last,
 
 std::string uuid()
 {
-    using kashmir::uuid_t;
-    using kashmir::system::DevRand;
-    DevRand devrandom;
-    DevRand& in = devrandom;
-    uuid_t uuid;
-    in >> uuid;
+    boost::uuids::random_generator generator;
+    boost::uuids::uuid uuid(generator());
+
     std::stringstream sstr;
-    sstr<<uuid;
+    sstr<<boost::uuids::to_string(uuid);
     return sstr.str();
 }
 

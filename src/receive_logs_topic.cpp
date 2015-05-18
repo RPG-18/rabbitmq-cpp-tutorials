@@ -1,7 +1,7 @@
 #include <iostream>
 #include <algorithm>
 
-#include "SimplePocoHandler.h"
+#include "AsioHandler.h"
 
 int main(int argc, const char* argv[])
 {
@@ -10,7 +10,10 @@ int main(int argc, const char* argv[])
         std::cout<<"Usage: "<<argv[0]<<" [binding_key]..."<<std::endl;
         return 1;
     }
-    SimplePocoHandler handler("localhost", 5672);
+
+    boost::asio::io_service ioService;
+    AsioHandler handler(ioService);
+    handler.connect("localhost", 5672);
 
     AMQP::Connection connection(&handler, AMQP::Login("guest", "guest"), "/");
 
@@ -47,6 +50,6 @@ int main(int argc, const char* argv[])
     channel.declareQueue(AMQP::exclusive).onSuccess(callback);
 
     std::cout << " [*] Waiting for messages. To exit press CTRL-C\n";
-    handler.loop();
+    ioService.run();
     return 0;
 }

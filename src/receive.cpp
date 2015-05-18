@@ -1,6 +1,5 @@
 #include <iostream>
 
-#include "SimplePocoHandler.h"
 #include "AsioHandler.h"
 
 int main(void)

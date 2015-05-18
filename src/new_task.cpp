@@ -1,18 +1,23 @@
 #include <iostream>
 
-#include "SimplePocoHandler.h"
 #include "tools.h"
+#include "AsioHandler.h"
+
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 int main(int argc, const char* argv[])
 {
     const std::string msg =
             argc > 1 ? join(&argv[1], &argv[argc], " ") : "Hello World!";
 
-    SimplePocoHandler handler("localhost", 5672);
+    boost::asio::io_service ioService;
+    AsioHandler handler(ioService);
+    handler.connect("localhost", 5672);
 
     AMQP::Connection connection(&handler, AMQP::Login("guest", "guest"), "/");
     AMQP::Channel channel(&connection);
 
+    boost::asio::deadline_timer t(ioService, boost::posix_time::millisec(100));
     AMQP::QueueCallback callback =
             [&](const std::string &name, int msgcount, int consumercount)
             {
@@ -20,10 +25,12 @@ int main(int argc, const char* argv[])
                 env.setDeliveryMode(2);
                 channel.publish("", "task_queue", env);
                 std::cout<<" [x] Sent '"<<msg<<"'\n";
-                handler.quit();
+
+                t.async_wait([&](const boost::system::error_code&){ioService.stop();});
             };
 
     channel.declareQueue("task_queue", AMQP::durable).onSuccess(callback);
-    handler.loop();
+
+    ioService.run();
     return 0;
 }
