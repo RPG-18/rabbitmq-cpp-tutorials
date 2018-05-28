@@ -4,6 +4,8 @@
 #include <cstring>
 #include <cassert>
 #include <iostream>
+
+#include <Poco/Net/IPAddress.h>
 #include <Poco/Net/StreamSocket.h>
 
 #include "SimplePocoHandler.h"
@@ -84,10 +86,19 @@ struct SimplePocoHandlerImpl
     Buffer outBuffer;
     std::vector<char> tmpBuff;
 };
+
 SimplePocoHandler::SimplePocoHandler(const std::string& host, uint16_t port) :
         m_impl(new SimplePocoHandlerImpl)
 {
     const Poco::Net::SocketAddress address(host, port);
+    m_impl->socket.connect(address);
+    m_impl->socket.setKeepAlive(true);
+}
+
+SimplePocoHandler::SimplePocoHandler(const Poco::Net::IPAddress& ip, uint16_t port) :
+        m_impl(new SimplePocoHandlerImpl)
+{
+    const Poco::Net::SocketAddress address(ip, port);
     m_impl->socket.connect(address);
     m_impl->socket.setKeepAlive(true);
 }

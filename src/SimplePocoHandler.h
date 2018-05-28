@@ -4,6 +4,8 @@
 #include <memory>
 #include <amqpcpp.h>
 
+#include <Poco/Net/IPAddress.h>
+
 class SimplePocoHandlerImpl;
 class SimplePocoHandler: public AMQP::ConnectionHandler
 {
@@ -13,6 +15,7 @@ public:
     static constexpr size_t TEMP_BUFFER_SIZE = 1024 * 1024; //1Mb
 
     SimplePocoHandler(const std::string& host, uint16_t port);
+    SimplePocoHandler(const Poco::Net::IPAddress& ip, uint16_t port);
     virtual ~SimplePocoHandler();
 
     void loop();
