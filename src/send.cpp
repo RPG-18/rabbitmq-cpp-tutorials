@@ -5,8 +5,8 @@
 
 int main(void)
 {
-    const Poco::Net::IPAddress ip("127.0.0.1");
-    const SimplePocoHandler handler(ip, 5672);
+    Poco::Net::IPAddress ip("127.0.0.1");
+    SimplePocoHandler handler(ip, 5672);
 
     AMQP::Connection connection(&handler, AMQP::Login("guest", "guest"), "/");
     AMQP::Channel channel(&connection);
