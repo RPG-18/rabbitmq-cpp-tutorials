@@ -4,7 +4,7 @@
 #include <memory>
 #include <amqpcpp.h>
 
-class SimplePocoHandlerImpl;
+struct SimplePocoHandlerImpl;
 class SimplePocoHandler: public AMQP::ConnectionHandler
 {
 public:
